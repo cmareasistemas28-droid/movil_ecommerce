@@ -2,7 +2,7 @@ class Product {
   const Product({
     required this.id,
     required this.name,
-    required this.category,
+    required this.subcategoryId,
     required this.priceCents,
     required this.rating,
     required this.description,
@@ -10,11 +10,12 @@ class Product {
     required this.art,
     this.oldPriceCents,
     this.stock = 12,
+    this.imageAssets = const [],
   });
 
   final String id;
   final String name;
-  final String category;
+  final String subcategoryId;
   final int priceCents;
   final int? oldPriceCents;
   final double rating;
@@ -22,4 +23,5 @@ class Product {
   final Map<String, String> specifications;
   final String art;
   final int stock;
+  final List<String> imageAssets;
 }

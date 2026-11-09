@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract final class ShopColors {
   static const green = Color(0xFF005C3C);
-  static const orange = Color(0xFFFF790D);
+  static const accent = ReferenceColors.accent;
   static const ink = Color(0xFF172B24);
   static const muted = Color(0xFF5C6861);
   static const background = Color(0xFFF5F6F3);
@@ -12,86 +12,142 @@ abstract final class ShopColors {
 }
 
 abstract final class AppTheme {
-  static ThemeData get light => ThemeData(
-    useMaterial3: true,
-    fontFamily: 'Roboto',
-    iconButtonTheme: IconButtonThemeData(
-      style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
-    ),
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: ShopColors.green,
-      primary: ShopColors.green,
-      secondary: ShopColors.orange,
-      surface: Colors.white,
-      onSurface: ShopColors.ink,
-    ),
-    scaffoldBackgroundColor: ShopColors.background,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: ShopColors.background,
-      foregroundColor: ShopColors.ink,
-      elevation: 0,
-      centerTitle: true,
-      scrolledUnderElevation: 0,
-    ),
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w800,
-        letterSpacing: -1.2,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 26,
-        fontWeight: FontWeight.w800,
-        letterSpacing: -0.8,
-      ),
-      titleLarge: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.5,
-      ),
-      titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-      bodyLarge: TextStyle(fontSize: 16, height: 1.5),
-      bodyMedium: TextStyle(fontSize: 14, height: 1.5, color: ShopColors.muted),
-      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-    ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: ShopColors.orange,
-        foregroundColor: ShopColors.ink,
-        minimumSize: const Size(48, 52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        textStyle: const TextStyle(
+  static ThemeData reference({bool dark = false}) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: ReferenceColors.coral,
+      brightness: dark ? Brightness.dark : Brightness.light,
+      primary: dark ? ReferenceColors.accentLight : ReferenceColors.accent,
+      onPrimary: dark ? ReferenceColors.ink : Colors.white,
+      primaryContainer: dark
+          ? const Color(0xFF3E2529)
+          : ReferenceColors.accentTint,
+      onPrimaryContainer: dark
+          ? const Color(0xFFFFDADD)
+          : const Color(0xFF7A2630),
+      secondary: dark ? ReferenceColors.accentLight : ReferenceColors.accent,
+      onSecondary: dark ? ReferenceColors.ink : Colors.white,
+      secondaryContainer: dark
+          ? const Color(0xFF3E2529)
+          : ReferenceColors.accentTint,
+      onSecondaryContainer: dark
+          ? const Color(0xFFFFDADD)
+          : const Color(0xFF7A2630),
+      surface: dark ? const Color(0xFF191919) : Colors.white,
+      surfaceDim: dark ? const Color(0xFF191919) : const Color(0xFFF2F2F2),
+      surfaceBright: dark ? const Color(0xFF383838) : Colors.white,
+      surfaceContainerLowest: dark ? const Color(0xFF121212) : Colors.white,
+      surfaceContainerLow: dark
+          ? const Color(0xFF222222)
+          : const Color(0xFFF7F7F7),
+      surfaceContainer: dark
+          ? const Color(0xFF292929)
+          : const Color(0xFFF2F2F2),
+      surfaceContainerHigh: dark
+          ? const Color(0xFF303030)
+          : const Color(0xFFEEEEEE),
+      surfaceContainerHighest: dark
+          ? const Color(0xFF383838)
+          : const Color(0xFFE7E7E7),
+      surfaceTint: Colors.transparent,
+      outline: dark ? const Color(0xFF929292) : const Color(0xFF888888),
+      outlineVariant: dark ? const Color(0xFF444444) : const Color(0xFFE0E0E0),
+      onSurface: dark ? const Color(0xFFF5F5F5) : ReferenceColors.ink,
+      onSurfaceVariant: dark ? const Color(0xFFBDBDBD) : ReferenceColors.muted,
+    );
+    return ThemeData(
+      useMaterial3: true,
+      fontFamily: 'Roboto',
+      colorScheme: scheme,
+      scaffoldBackgroundColor: dark
+          ? const Color(0xFF151517)
+          : const Color(0xFFFCFBFC),
+      appBarTheme: AppBarTheme(
+        backgroundColor: dark
+            ? const Color(0xFF151517)
+            : const Color(0xFFFCFBFC),
+        foregroundColor: scheme.onSurface,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: TextStyle(
           fontFamily: 'Roboto',
-          fontWeight: FontWeight.w800,
-          fontSize: 16,
+          color: scheme.onSurface,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
       ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: ShopColors.border),
+      textTheme: TextTheme(
+        headlineLarge: TextStyle(
+          fontSize: 26,
+          fontWeight: FontWeight.w600,
+          color: scheme.onSurface,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: scheme.onSurface,
+        ),
+        titleLarge: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+          color: scheme.onSurface,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: scheme.onSurface,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: 14,
+          height: 1.4,
+          color: scheme.onSurface,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 13,
+          height: 1.4,
+          color: scheme.onSurface,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          height: 1.4,
+          color: scheme.onSurfaceVariant,
+        ),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: ShopColors.border),
+      dividerTheme: DividerThemeData(
+        color: dark ? const Color(0xFF373737) : const Color(0xFFE0E0E0),
+        thickness: .6,
       ),
-      contentPadding: const EdgeInsets.all(16),
-    ),
-    chipTheme: ChipThemeData(
-      backgroundColor: Colors.white,
-      selectedColor: ShopColors.green,
-      side: BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-    ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: Colors.white,
-      indicatorColor: ShopColors.mint,
-      labelTextStyle: WidgetStateProperty.all(
-        const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(minimumSize: const Size(44, 44)),
       ),
-    ),
-  );
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          minimumSize: const Size(48, 44),
+          textStyle: const TextStyle(
+            fontFamily: 'Roboto',
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          shape: const StadiumBorder(),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData get light => reference();
+}
+
+abstract final class ReferenceColors {
+  static const coral = Color(0xFFFF765F);
+  static const accent = Color(0xFFFF593C);
+  static const accentLight = Color(0xFFFFA38F);
+  static const accentTint = Color(0xFFFFF2EF);
+  static const ink = Color(0xFF222421);
+  static const muted = Color(0xFF74787C);
+  static const tile = Color(0xFFF2F2F2);
+  static const restaurant = accentTint;
+  static const taxi = Color(0xFFDFEFFF);
+  static const avatar = Color(0xFF6F80D8);
 }

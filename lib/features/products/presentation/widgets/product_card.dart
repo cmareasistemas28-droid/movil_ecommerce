@@ -1,146 +1,154 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/store/shop_scope.dart';
-import '../../../../app/theme/app_theme.dart';
 import '../../../../shared/extensions/money.dart';
 import '../../domain/entities/product.dart';
+import 'cart_added_message.dart';
 import 'favorite_button.dart';
 import 'product_image.dart';
+import 'rating_star.dart';
+import '../../../../shared/widgets/shop_surface.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   const ProductCard({super.key, required this.product});
   final Product product;
 
   @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  final _cartMessage = CartAddedMessageController();
+
+  @override
+  void dispose() {
+    _cartMessage.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final product = widget.product;
     final shop = ShopScope.of(context);
-    final full = shop.quantityOf(product.id) >= product.stock;
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    final full =
+        shop.checkoutInProgress ||
+        shop.quantityOf(product.id) >= shop.availableStock(product);
     void open() => Navigator.pushNamed(context, '/product', arguments: product);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                InkWell(
+    return ShopSurface(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: InkWell(
                   borderRadius: BorderRadius.circular(16),
                   onTap: open,
-                  child: ProductImage(product: product, height: 132),
+                  child: ProductImage(product: product, height: 112),
                 ),
-                Positioned(
-                  top: 2,
-                  right: 2,
-                  child: FavoriteButton(product: product),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: open,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 52),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          product.name,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: FavoriteButton(product: product),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: open,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 54),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        product.name,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
                   ),
-                  Wrap(
-                    spacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.star_rounded,
-                        size: 16,
-                        color: ShopColors.green,
-                      ),
-                      Text(
-                        '${product.rating}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: ShopColors.muted,
-                        ),
-                      ),
-                      Text(
-                        '· ${product.category}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: ShopColors.muted,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (product.oldPriceCents != null)
-                              Text(
-                                soles(product.oldPriceCents!),
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: ShopColors.muted,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
+                ),
+                Wrap(
+                  spacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    const RatingStar(size: 16),
+                    Text(
+                      '${product.rating}',
+                      style: TextStyle(fontSize: 11, color: muted),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (product.oldPriceCents != null)
                             Text(
-                              soles(product.priceCents),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
+                              soles(product.oldPriceCents!),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Theme.of(context).colorScheme.primary,
+                                decoration: TextDecoration.lineThrough,
                               ),
+                            )
+                          else
+                            const SizedBox(height: 15),
+                          Text(
+                            soles(product.priceCents),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: full
+                          ? 'Stock máximo en el carrito'
+                          : 'Agregar ${product.name}',
+                      onPressed: full
+                          ? null
+                          : () {
+                              shop.add(product);
+                              _cartMessage.show();
+                            },
+                      icon: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: full
+                              ? Theme.of(context).colorScheme.onSurface
+                                    .withValues(alpha: .15)
+                              : Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
-                      IconButton.filled(
-                        tooltip: full
-                            ? 'Stock máximo en el carrito'
-                            : 'Agregar ${product.name}',
-                        onPressed: full
-                            ? null
-                            : () {
-                                shop.add(product);
-                                ScaffoldMessenger.of(context)
-                                    .hideCurrentSnackBar();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '${product.name} agregado al carrito',
-                                    ),
-                                    action: SnackBarAction(
-                                      label: 'Ver carrito',
-                                      onPressed: () =>
-                                          Navigator.pushNamed(context, '/cart'),
-                                    ),
-                                  ),
-                                );
-                              },
-                        icon: const Icon(Icons.add, size: 20),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                CartAddedMessage(controller: _cartMessage),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

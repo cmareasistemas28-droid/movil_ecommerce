@@ -1,9 +1,30 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cibermax_movil/features/cart/domain/entities/shopping_cart.dart';
-import 'package:cibermax_movil/features/products/data/repositories/demo_product_repository.dart';
+import 'package:cibermax_movil/features/products/domain/entities/product.dart';
 
 void main() {
-  final products = const DemoProductRepository().getProducts();
+  const products = [
+    Product(
+      id: 'cart-fixture-1',
+      name: 'Ejemplo de prueba 1',
+      subcategoryId: 'test',
+      priceCents: 12900,
+      rating: 5,
+      description: '',
+      specifications: {},
+      art: '',
+    ),
+    Product(
+      id: 'cart-fixture-2',
+      name: 'Ejemplo de prueba 2',
+      subcategoryId: 'test',
+      priceCents: 25900,
+      rating: 5,
+      description: '',
+      specifications: {},
+      art: '',
+    ),
+  ];
 
   test('quantities merge, stay within stock, and use integer totals', () {
     final cart = ShoppingCart();

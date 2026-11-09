@@ -31,4 +31,5 @@ class ShoppingCart {
   }
 
   void remove(String id) => _items.remove(id);
+  void clear() => _items.clear();
 }
